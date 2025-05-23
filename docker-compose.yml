@@ -1,0 +1,72 @@
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gastroworld-app
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - laravel-network
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:alpine
+    container_name: project-nginxgastroworld
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./:/var/www/html
+    networks:
+      - laravel-network
+    depends_on:
+      - app
+
+  db:
+    image: mariadb:10.2.33
+    container_name: gastroworld_db
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: gastroworld
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - laravel-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmingastroworld
+    environment:
+      PMA_HOST: gastroworld_db
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
+    networks:
+      - laravel-network
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    container_name: mailhogastroworld
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - laravel-network
+
+volumes:
+  db_data:
+
+networks:
+  laravel-network:
+    driver: bridge
