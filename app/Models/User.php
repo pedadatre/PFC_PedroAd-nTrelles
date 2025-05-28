@@ -6,6 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Recipe;
+use App\Models\Like;
+use App\Models\Comment;
+use App\Models\Item;
+use App\Models\Achievement;
+use App\Models\Message;
+
 
 class User extends Authenticatable
 {
@@ -67,6 +74,15 @@ public function activeAvatar()
 public function activeBadge()
 {
     return $this->belongsTo(Item::class, 'active_badge_id');
+}
+public function sentMessages()
+{
+    return $this->hasMany(Message::class, 'sender_id');
+}
+
+public function receivedMessages()
+{
+    return $this->hasMany(Message::class, 'receiver_id');
 }
 
 }

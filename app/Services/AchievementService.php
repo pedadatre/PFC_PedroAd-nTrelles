@@ -40,12 +40,12 @@ class AchievementService
         $achievements = Achievement::where('type', $type)
                                  ->where('requirement_count', '<=', $count)
                                  ->get();
-
+    
         foreach ($achievements as $achievement) {
             $userAchievement = $user->achievements()
                                    ->where('achievement_id', $achievement->id)
                                    ->first();
-
+    
             if (!$userAchievement) {
                 DB::transaction(function () use ($user, $achievement, $count) {
                     // Otorgar el logro
@@ -53,19 +53,16 @@ class AchievementService
                         'progress' => $count,
                         'unlocked_at' => now()
                     ]);
-
+    
                     // Otorgar recompensa
                     $user->increment('coins', $achievement->coins_reward);
-
-                    // Crear notificación
-                    $user->notifications()->create([
-                        'type' => 'achievement_unlocked',
-                        'data' => [
-                            'achievement_name' => $achievement->name,
-                            'coins_reward' => $achievement->coins_reward
-                        ]
-                    ]);
+    
+                    // Crear notificación usando el sistema de notificaciones de Laravel
+                    $user->notify(new \App\Notifications\AchievementUnlocked($achievement));
                 });
+            
+        
+    
             } else {
                 // Actualizar progreso si no está desbloqueado
                 if (!$userAchievement->pivot->unlocked_at) {

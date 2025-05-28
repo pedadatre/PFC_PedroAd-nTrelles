@@ -25,6 +25,10 @@
                                         {{ $notification->data['sender_name'] }}
                                     </a>
                                     te ha enviado un mensaje
+                                    <a href="{{ route('messages.show', $notification->data['sender_id']) }}" 
+                                       class="text-indigo-600 hover:text-indigo-800 ml-2">
+                                        Ver conversación
+                                    </a>
                                 </p>
                                 <p class="text-sm text-gray-600">
                                     {{ Str::limit($notification->data['message'], 100) }}
@@ -47,10 +51,6 @@
                 @empty
                     <p class="text-center text-gray-500">No tienes notificaciones</p>
                 @endforelse
-            </div>
-
-            <div class="mt-6">
-                {{ $notifications->links() }}
             </div>
         </div>
     </div>

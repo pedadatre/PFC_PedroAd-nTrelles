@@ -70,7 +70,52 @@ class RecipeController extends Controller
 
         return back()->with('success', '¡Me gusta añadido!');
     }
+    public function edit(Recipe $recipe)
+    {
+        if ($recipe->user_id !== Auth::id()) {
+            abort(403);
+        }
+        return view('recipes.edit', compact('recipe'));
+    }
 
+    public function update(Request $request, Recipe $recipe)
+    {
+        if ($recipe->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'ingredients' => 'required|array',
+            'instructions' => 'required|string',
+            'image' => 'nullable|image|max:2048'
+        ]);
+
+        if ($request->hasFile('image')) {
+            Storage::delete(str_replace('/storage/', 'public/', $recipe->image_url));
+            $imagePath = $request->file('image')->store('recipes', 'public');
+            $validated['image_url'] = Storage::url($imagePath);
+        }
+
+        $recipe->update($validated);
+
+        return redirect()->route('recipes.show', $recipe)
+            ->with('success', '¡Receta actualizada exitosamente!');
+    }
+
+    public function destroy(Recipe $recipe)
+    {
+        if ($recipe->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        Storage::delete(str_replace('/storage/', 'public/', $recipe->image_url));
+        $recipe->delete();
+
+        return redirect()->route('recipes.index')
+            ->with('success', '¡Receta eliminada exitosamente!');
+    }
     public function search(Request $request)
     {
         $query = Recipe::with(['user', 'likes', 'comments']);

@@ -8,31 +8,49 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\UserItemController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\NotificationController;
 
 // Rutas públicas
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [RecipeController::class, 'search'])->name('recipes.search');
-Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
 
 // Rutas que requieren autenticación
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+    // Recetas
+    Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
+    Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
+    Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
+    Route::post('/recipes/{recipe}/like', [RecipeController::class, 'like'])->name('recipes.like');
+    Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
+    Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
+    Route::post('/recipes/{recipe}/comments', [CommentController::class, 'store'])->name('comments.store');
 
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/{user}', [MessageController::class, 'show'])->name('messages.show');
+    Route::post('/messages/{user}', [MessageController::class, 'store'])->name('messages.store');
+    // Tienda
+    Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+    Route::post('/shop/{item}/purchase', [ShopController::class, 'purchase'])->name('shop.purchase');
+    Route::get('/shop/inventory', [ShopController::class, 'inventory'])->name('shop.inventory');
     // Perfil
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/profile', [ProfileController::class, 'own'])->name('profile.own');
     Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    // Interacciones con recetas
-    Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
-    Route::post('/recipes/{recipe}/like', [RecipeController::class, 'like'])->name('recipes.like');
-    Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
-    Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
-    Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
+    // Notificaciones
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead'])
+        ->name('notifications.markAsRead');
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])
+        ->name('notifications.markAllAsRead');
+
+    
       // Comentarios
       Route::post('/recipes/{recipe}/comments', [CommentController::class, 'store'])->name('comments.store');
       Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');

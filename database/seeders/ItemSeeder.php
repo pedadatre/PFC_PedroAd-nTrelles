@@ -35,7 +35,7 @@ class ItemSeeder extends Seeder
                 'name' => 'Chef Innovador',
                 'description' => 'Reconocimiento a la creatividad culinaria',
                 'icon' => '💫',
-                'price' => 1500,
+                'price' => 2,
                 'type' => 'badge'
             ],
             [

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Notifications\DatabaseNotification;
 
 class NotificationController extends Controller
 {
@@ -18,23 +18,20 @@ class NotificationController extends Controller
         return view('notifications.index', compact('notifications'));
     }
 
-    public function markAsRead(Notification $notification)
+    public function markAsRead(DatabaseNotification $notification)
     {
-        if ($notification->user_id !== Auth::id()) {
+        if ($notification->notifiable_id !== Auth::id()) {
             abort(403);
         }
 
-        $notification->update(['read_at' => now()]);
+        $notification->markAsRead();
 
         return back();
     }
 
     public function markAllAsRead()
     {
-        Auth::user()
-            ->notifications()
-            ->whereNull('read_at')
-            ->update(['read_at' => now()]);
+        Auth::user()->unreadNotifications->markAsRead();
 
         return back();
     }

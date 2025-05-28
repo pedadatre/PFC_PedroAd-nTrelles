@@ -9,26 +9,26 @@ use Illuminate\Support\Facades\Auth;
 class ShopController extends Controller
 {
     public function index()
-    {
-        $items = Item::all();
-        $userCoins = Auth::user()->coins;
-        
-        return view('shop.index', compact('items', 'userCoins'));
+{
+    $items = Item::all();
+    $userCoins = Auth::user()->coins_balance;
+    
+    return view('shop.index', compact('items', 'userCoins'));
+}
+
+public function purchase(Item $item)
+{
+    $user = Auth::user();
+
+    if ($user->coins_balance < $item->price) { 
+        return back()->with('error', 'No tienes suficientes monedas');
     }
 
-    public function purchase(Item $item)
-    {
-        $user = Auth::user();
+    $user->items()->attach($item->id);
+    $user->decrement('coins_balance', $item->price); 
 
-        if ($user->coins < $item->price) {
-            return back()->with('error', 'No tienes suficientes monedas');
-        }
-
-        $user->items()->attach($item->id);
-        $user->decrement('coins', $item->price);
-
-        return back()->with('success', '¡Item comprado exitosamente!');
-    }
+    return back()->with('success', '¡Item comprado exitosamente!');
+}
 
     public function inventory()
     {
