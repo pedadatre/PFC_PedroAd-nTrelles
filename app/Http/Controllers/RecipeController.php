@@ -33,13 +33,14 @@ class RecipeController extends Controller
         ]);
 
         $imagePath = $request->file('image')->store('recipes', 'public');
+        $imageUrl = config('app.url') . Storage::url($imagePath);
 
         $recipe = Auth::user()->recipes()->create([
             'title' => $validated['title'],
             'description' => $validated['description'],
             'ingredients' => $validated['ingredients'],
             'instructions' => $validated['instructions'],
-            'image_url' => Storage::url($imagePath)
+            'image_url' => $imageUrl
         ]);
 
         // Verificar logros después de crear una receta
@@ -93,9 +94,13 @@ class RecipeController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            Storage::delete(str_replace('/storage/', 'public/', $recipe->image_url));
+            // Eliminar la imagen anterior
+            $oldPath = str_replace(config('app.url') . '/storage/', 'public/', $recipe->image_url);
+            Storage::delete($oldPath);
+            
+            // Guardar nueva imagen
             $imagePath = $request->file('image')->store('recipes', 'public');
-            $validated['image_url'] = Storage::url($imagePath);
+            $validated['image_url'] = config('app.url') . Storage::url($imagePath);
         }
 
         $recipe->update($validated);
