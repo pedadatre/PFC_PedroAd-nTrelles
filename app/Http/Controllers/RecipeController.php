@@ -52,9 +52,14 @@ class RecipeController extends Controller
     }
 
     public function show(Recipe $recipe)
-    {
-        return view('recipes.show', compact('recipe'));
-    }
+{
+    dd([
+        'image_url' => $recipe->image_url,
+        'storage_path' => Storage::url('recipes/'),
+        'full_url' => asset($recipe->image_url)
+    ]);
+    return view('recipes.show', compact('recipe'));
+}
 
     public function like(Recipe $recipe)
     {
