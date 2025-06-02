@@ -57,6 +57,7 @@ class RecipeController extends Controller
     return view('recipes.show', compact('recipe'));
 }
 
+
     public function like(Recipe $recipe)
     {
         $user = Auth::user();
