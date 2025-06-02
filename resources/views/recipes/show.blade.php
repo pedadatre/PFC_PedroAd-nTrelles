@@ -25,8 +25,8 @@
                 @endauth
             </div>
 
-            <img src="{{ url($recipe->image_url) }}" alt="{{ $recipe->title }}" class="w-full h-96 object-cover rounded-lg mb-6">            
-            <!-- Ingredientes y Preparación -->
+            <img src="{{ url($recipe->image_url) }}" alt="{{ $recipe->title }}" class="w-full h-96 object-cover rounded-lg mb-6">
+                        <!-- Ingredientes y Preparación -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="md:col-span-1">
                     <h2 class="text-xl font-bold mb-4">Ingredientes</h2>

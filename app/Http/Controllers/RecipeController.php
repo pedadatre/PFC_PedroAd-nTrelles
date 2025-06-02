@@ -33,8 +33,8 @@ class RecipeController extends Controller
         ]);
 
         $imagePath = $request->file('image')->store('recipes', 'public');
-        // Guardar solo la ruta relativa
-        $imageUrl = '/storage/' . $imagePath;
+        // Usar Storage::url() para obtener la URL correcta
+        $imageUrl = Storage::url($imagePath);
 
         $recipe = Auth::user()->recipes()->create([
             'title' => $validated['title'],
@@ -53,11 +53,7 @@ class RecipeController extends Controller
 
     public function show(Recipe $recipe)
 {
-    dd([
-        'image_url' => $recipe->image_url,
-        'storage_path' => Storage::url('recipes/'),
-        'full_url' => asset($recipe->image_url)
-    ]);
+    
     return view('recipes.show', compact('recipe'));
 }
 
