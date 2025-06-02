@@ -21,6 +21,15 @@
                                 <span>{{ $recipe->likes_count }}</span>
                             </button>
                         </form>
+                        @if(Auth::id() === $recipe->user_id)
+                            <form action="{{ route('recipes.destroy', $recipe) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta receta?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+                                    Eliminar
+                                </button>
+                            </form>
+                        @endif
                     </div>
                 @endauth
             </div>
