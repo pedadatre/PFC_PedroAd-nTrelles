@@ -28,161 +28,65 @@
                 @endauth
             </div>
         </div>
+                <!-- Hero Section se mantiene igual -->
 
         <!-- Barra de Búsqueda -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
-            <form action="{{ route('recipes.search') }}" method="GET" class="flex gap-4">
-                <input type="text" 
-                       name="search" 
-                       placeholder="Buscar recetas..." 
-                       class="flex-1 border rounded-lg px-4 py-2">
-                <select name="category" class="border rounded-lg px-4 py-2">
-                    <option value="">Todas las categorías</option>
-                    @foreach(['Pasta', 'Postres', 'Carnes', 'Ensaladas', 'Sopas'] as $category)
-                        <option value="{{ $category }}">{{ $category }}</option>
+        <x-recipe-search :cuisineTypes="$cuisineTypes" />
+
+        <!-- Sección de Resultados de Búsqueda -->
+        @if(request()->has('search') || request()->has('cuisine_type') || request()->has('prep_time'))
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold mb-6">Resultados de búsqueda</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    @forelse($recipes as $recipe)
+                        <x-recipe-card :recipe="$recipe" />
+                    @empty
+                        <div class="col-span-full text-center py-12">
+                            <p class="text-gray-500 text-lg">No encontramos recetas que coincidan con tu búsqueda</p>
+                            <a href="{{ route('home') }}" class="text-indigo-600 hover:text-indigo-800 mt-4 inline-block">
+                                Volver al inicio
+                            </a>
+                        </div>
+                    @endforelse
+                </div>
+                {{ $recipes->links() }}
+            </div>
+        @else
+            <!-- Últimas Recetas -->
+            <section class="mb-12">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Últimas Recetas</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    @foreach($latestRecipes as $recipe)
+                        <x-recipe-card :recipe="$recipe" />
                     @endforeach
-                </select>
-                <button type="submit" 
-                        class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
-                    Buscar
-                </button>
-            </form>
-        </div>
+                </div>
+            </section>
 
-        <!-- Últimas Recetas -->
-        <section class="mb-12">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Últimas Recetas</h2>
-                <a href="{{ route('recipes.search') }}" 
-                   class="text-indigo-600 hover:text-indigo-700 transition">
-                    Ver todas →
-                </a>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                @foreach($latestRecipes as $recipe)
-                    <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition">
-                        <img src="{{ $recipe->image_url }}" 
-                             alt="{{ $recipe->title }}" 
-                             class="w-full h-48 object-cover">
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2">
-                                <a href="{{ route('recipes.show', $recipe) }}" 
-                                   class="hover:text-indigo-600 transition">
-                                    {{ $recipe->title }}
-                                </a>
-                            </h3>
-                            <p class="text-gray-600 mb-4">{{ Str::limit($recipe->description, 100) }}</p>
-                            <div class="flex justify-between items-center">
-                                <a href="{{ route('profile.show', $recipe->user) }}" 
-                                   class="flex items-center text-indigo-600 hover:text-indigo-700">
-                                    @if($recipe->user->activeAvatar)
-                                        <span class="text-2xl mr-2">{{ $recipe->user->activeAvatar->icon }}</span>
-                                    @endif
-                                    {{ $recipe->user->name }}
-                                </a>
-                                <div class="flex items-center space-x-4 text-gray-500">
-                                    <span class="flex items-center">
-                                        <span class="text-red-500 mr-1">❤️</span>
-                                        {{ $recipe->likes->count() }}
-                                    </span>
-                                    <span class="flex items-center">
-                                        <span class="text-gray-600 mr-1">💬</span>
-                                        {{ $recipe->comments->count() }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </section>
+            <!-- Recetas Populares -->
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold mb-6">Recetas Populares</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    @foreach($popularRecipes as $recipe)
+                        <x-recipe-card :recipe="$recipe" />
+                    @endforeach
+                </div>
+            </section>
 
-        <!-- Recetas Populares -->
-        <section class="mb-12">
-            <h2 class="text-2xl font-bold mb-6">Recetas Populares</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                @foreach($popularRecipes as $recipe)
-                    <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition">
-                        <img src="{{ $recipe->image_url }}" 
-                             alt="{{ $recipe->title }}" 
-                             class="w-full h-48 object-cover">
-                        <div class="p-6">
-                            <h3 class="font-bold text-xl mb-2">
-                                <a href="{{ route('recipes.show', $recipe) }}" 
-                                   class="hover:text-indigo-600 transition">
-                                    {{ $recipe->title }}
-                                </a>
-                            </h3>
-                            <p class="text-gray-600 mb-4">{{ Str::limit($recipe->description, 100) }}</p>
-                            <div class="flex justify-between items-center">
-                                <a href="{{ route('profile.show', $recipe->user) }}" 
-                                   class="flex items-center text-indigo-600 hover:text-indigo-700">
-                                    @if($recipe->user->activeAvatar)
-                                        <span class="text-2xl mr-2">{{ $recipe->user->activeAvatar->icon }}</span>
-                                    @endif
-                                    {{ $recipe->user->name }}
-                                </a>
-                                <div class="flex items-center space-x-4 text-gray-500">
-                                    <span class="flex items-center">
-                                        <span class="text-red-500 mr-1">❤️</span>
-                                        {{ $recipe->likes_count }}
-                                    </span>
-                                    <span class="flex items-center">
-                                        <span class="text-gray-600 mr-1">💬</span>
-                                        {{ $recipe->comments_count }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </section>
-
-        @auth
             <!-- Recetas Recomendadas -->
-            @if($recommendedRecipes->isNotEmpty())
-                <section>
-                    <h2 class="text-2xl font-bold mb-6">Recomendado para ti</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        @foreach($recommendedRecipes as $recipe)
-                            <div class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition">
-                                <img src="{{ $recipe->image_url }}" 
-                                     alt="{{ $recipe->title }}" 
-                                     class="w-full h-48 object-cover">
-                                <div class="p-6">
-                                    <h3 class="font-bold text-xl mb-2">
-                                        <a href="{{ route('recipes.show', $recipe) }}" 
-                                           class="hover:text-indigo-600 transition">
-                                            {{ $recipe->title }}
-                                        </a>
-                                    </h3>
-                                    <p class="text-gray-600 mb-4">{{ Str::limit($recipe->description, 100) }}</p>
-                                    <div class="flex justify-between items-center">
-                                        <a href="{{ route('profile.show', $recipe->user) }}" 
-                                           class="flex items-center text-indigo-600 hover:text-indigo-700">
-                                            @if($recipe->user->activeAvatar)
-                                                <span class="text-2xl mr-2">{{ $recipe->user->activeAvatar->icon }}</span>
-                                            @endif
-                                            {{ $recipe->user->name }}
-                                        </a>
-                                        <div class="flex items-center space-x-4 text-gray-500">
-                                            <span class="flex items-center">
-                                                <span class="text-red-500 mr-1">❤️</span>
-                                                {{ $recipe->likes->count() }}
-                                            </span>
-                                            <span class="flex items-center">
-                                                <span class="text-gray-600 mr-1">💬</span>
-                                                {{ $recipe->comments->count() }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </section>
-            @endif
-        @endauth
+            @auth
+                @if($recommendedRecipes->isNotEmpty())
+                    <section class="mb-12">
+                        <h2 class="text-2xl font-bold mb-6">Recomendado para ti</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            @foreach($recommendedRecipes as $recipe)
+                                <x-recipe-card :recipe="$recipe" />
+                            @endforeach
+                        </div>
+                    </section>
+                @endif
+            @endauth
+        @endif   
     </div>
 </x-app-layout>

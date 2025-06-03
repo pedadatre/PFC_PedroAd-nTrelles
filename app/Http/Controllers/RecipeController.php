@@ -27,13 +27,16 @@ class RecipeController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'ingredients' => 'required|array',
+            'ingredients' => 'required|array|min:1',
+            'ingredients.*' => 'required|string|max:255',
             'instructions' => 'required|string',
-            'image' => 'required|image|max:2048'
+            'image' => 'required|image|max:2048',
+            'prep_time' => 'required|integer|min:1',
+            'difficulty' => 'required|string|in:facil,medio,dificil',
+            'cuisine_type' => 'required|string',
         ]);
 
         $imagePath = $request->file('image')->store('recipes', 'public');
-        // Guardar solo la ruta relativa
         $imageUrl = '/storage/' . $imagePath;
 
         $recipe = Auth::user()->recipes()->create([
@@ -41,10 +44,12 @@ class RecipeController extends Controller
             'description' => $validated['description'],
             'ingredients' => $validated['ingredients'],
             'instructions' => $validated['instructions'],
-            'image_url' => $imageUrl
+            'image_url' => $imageUrl,
+            'prep_time' => $validated['prep_time'],
+            'difficulty' => $validated['difficulty'],
+            'cuisine_type' => $validated['cuisine_type'],
         ]);
 
-        // Verificar logros después de crear una receta
         $this->achievementService->checkUserAchievements(Auth::user());
 
         return redirect()->route('recipes.show', $recipe)
@@ -121,7 +126,7 @@ class RecipeController extends Controller
         Storage::delete(str_replace('/storage/', 'public/', $recipe->image_url));
         $recipe->delete();
 
-        return redirect()->route('recipes.index')
+        return redirect()->route('home')
             ->with('success', '¡Receta eliminada exitosamente!');
     }
     public function search(Request $request)

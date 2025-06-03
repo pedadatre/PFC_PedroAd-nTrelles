@@ -15,6 +15,7 @@ use App\Http\Controllers\NotificationController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [RecipeController::class, 'search'])->name('recipes.search');
 
+
 // Rutas que requieren autenticación
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {

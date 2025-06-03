@@ -7,47 +7,95 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
-{public function index()
+{
+    public function index(Request $request)
     {
-        // Obtener las recetas más recientes
-        $latestRecipes = Recipe::with(['user', 'likes', 'comments'])
-            ->withCount(['likes', 'comments'])
-            ->orderBy('created_at', 'desc')
-            ->take(6)
-            ->get();
-    
-        // Obtener las recetas más populares (con más likes)
-        $popularRecipes = Recipe::withCount(['likes', 'comments'])
-            ->with(['user', 'likes', 'comments'])
-            ->orderBy('likes_count', 'desc')
-            ->take(6)
-            ->get();
-    
-        // Si el usuario está autenticado, obtener recetas recomendadas
-        $recommendedRecipes = collect();
-        if (Auth::check()) {
-            $userLikes = Auth::user()->likes()->pluck('recipe_id');
-            
-            if ($userLikes->isNotEmpty()) {
-                $recommendedRecipes = Recipe::whereHas('likes', function($query) use ($userLikes) {
-                    $query->whereIn('recipe_id', $userLikes);
-                })
-                ->with(['user', 'likes', 'comments'])
-                ->withCount(['likes', 'comments'])
-                ->inRandomOrder()
-                ->take(6)
-                ->get();
+        $query = Recipe::with(['user', 'likes', 'comments'])
+                      ->withCount(['likes', 'comments']);
+
+        // Aplicar filtros de búsqueda
+        if ($request->filled('search')) {
+            $searchTerms = explode(' ', $request->search);
+            $query->where(function($q) use ($searchTerms) {
+                foreach ($searchTerms as $term) {
+                    $q->where(function($subQ) use ($term) {
+                        $subQ->where('title', 'like', "%{$term}%")
+                            ->orWhere('description', 'like', "%{$term}%")
+                            ->orWhereJsonContains('ingredients', $term);
+                    });
+                }
+            });
+        }
+
+        // Filtro de tiempo de preparación
+        if ($request->filled('prep_time') && is_numeric($request->prep_time)) {
+            $prepTime = (int) $request->prep_time;
+            if ($prepTime > 0) {
+                $query->where(function($q) use ($prepTime) {
+                    $q->where('prep_time', '<=', $prepTime)
+                      ->whereNotNull('prep_time');
+                });
             }
         }
-    
-        // Para la vista welcome necesitamos featured recipes
-        $featuredRecipes = $popularRecipes;
-    
-        // Determinar qué vista mostrar basado en si el usuario está autenticado
-        if (Auth::check()) {
-            return view('home', compact('latestRecipes', 'popularRecipes', 'recommendedRecipes'));
-        } else {
-            return view('welcome', compact('featuredRecipes'));
+
+        // Filtro de tipo de cocina
+        if ($request->filled('cuisine_type')) {
+            $query->where(function($q) use ($request) {
+                $q->where('cuisine_type', 'like', "%{$request->cuisine_type}%")
+                  ->whereNotNull('cuisine_type');
+            });
         }
+
+        // Filtro de dificultad
+        if ($request->filled('difficulty')) {
+            $query->where(function($q) use ($request) {
+                $q->where('difficulty', $request->difficulty)
+                  ->whereNotNull('difficulty');
+            });
+        }
+
+        // Si hay búsqueda activa, paginar los resultados
+        if ($request->hasAny(['search', 'prep_time', 'cuisine_type', 'difficulty'])) {
+            $recipes = $query->latest()->paginate(9)->withQueryString();
+            $latestRecipes = collect();
+            $popularRecipes = collect();
+        } else {
+            // Si no hay búsqueda, mostrar las secciones normales
+            $recipes = collect();
+            $latestRecipes = Recipe::with(['user', 'likes', 'comments'])
+                                 ->withCount(['likes', 'comments'])
+                                 ->latest()
+                                 ->take(6)
+                                 ->get();
+            
+            $popularRecipes = Recipe::with(['user', 'likes', 'comments'])
+                                  ->withCount(['likes', 'comments'])
+                                  ->orderByDesc('likes_count')
+                                  ->take(6)
+                                  ->get();
+        }
+
+        // Recetas recomendadas para usuarios autenticados
+        $recommendedRecipes = collect();
+        if (Auth::check()) {
+            $recommendedRecipes = Recipe::whereHas('likes', function($query) {
+                $query->where('user_id', Auth::id());
+            })
+            ->with(['user', 'likes', 'comments'])
+            ->withCount(['likes', 'comments'])
+            ->take(6)
+            ->get();
+        }
+
+        // Obtener tipos de cocina únicos para el filtro
+        $cuisineTypes = Recipe::distinct()->pluck('cuisine_type')->filter();
+
+        return view('home', compact(
+            'recipes',
+            'latestRecipes',
+            'popularRecipes',
+            'recommendedRecipes',
+            'cuisineTypes'
+        ));
     }
 }
