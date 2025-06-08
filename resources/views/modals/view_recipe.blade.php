@@ -30,7 +30,7 @@
         <h3>Instructions</h3>
         <p x-text="recipe.instructions"></p>
         <div class="mt-4 flex items-start space-x-4">
-          <!-- Aquí usamos la variable `likes` en lugar de recipe.likes_count -->
+          
           <button @click="likeRecipe(recipe.id)">
             Like (<span x-text="likes"></span>)
           </button>

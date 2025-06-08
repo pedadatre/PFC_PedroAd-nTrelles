@@ -17,10 +17,14 @@ class Recipe extends Model
         'image_url',
         'user_id',
         'category',
+        'prep_time',
+        'difficulty',
+        'cuisine_type'
     ];
 
     protected $casts = [
-        'ingredients' => 'array'
+        'ingredients' => 'array',
+        'prep_time' => 'integer'
     ];
 
     public function user()
@@ -42,14 +46,15 @@ class Recipe extends Model
     {
         return $this->likes()->where('user_id', $user->id)->exists();
     }
-    public function scopePopular($query)
-{
-    return $query->withCount('likes')
-                 ->orderBy('likes_count', 'desc');
-}
 
-public function scopeRecent($query)
-{
-    return $query->orderBy('created_at', 'desc');
-}
+    public function scopePopular($query)
+    {
+        return $query->withCount('likes')
+                     ->orderBy('likes_count', 'desc');
+    }
+
+    public function scopeRecent($query)
+    {
+        return $query->orderBy('created_at', 'desc');
+    }
 }

@@ -39,16 +39,17 @@ class RecipeController extends Controller
         $imagePath = $request->file('image')->store('recipes', 'public');
         $imageUrl = '/storage/' . $imagePath;
 
-        $recipe = Auth::user()->recipes()->create([
-            'title' => $validated['title'],
-            'description' => $validated['description'],
-            'ingredients' => $validated['ingredients'],
-            'instructions' => $validated['instructions'],
-            'image_url' => $imageUrl,
-            'prep_time' => $validated['prep_time'],
-            'difficulty' => $validated['difficulty'],
-            'cuisine_type' => $validated['cuisine_type'],
-        ]);
+        $recipe = new Recipe();
+        $recipe->user_id = Auth::id();
+        $recipe->title = $validated['title'];
+        $recipe->description = $validated['description'];
+        $recipe->ingredients = $validated['ingredients'];
+        $recipe->instructions = $validated['instructions'];
+        $recipe->image_url = $imageUrl;
+        $recipe->prep_time = $validated['prep_time'];
+        $recipe->difficulty = $validated['difficulty'];
+        $recipe->cuisine_type = $validated['cuisine_type'];
+        $recipe->save();
 
         $this->achievementService->checkUserAchievements(Auth::user());
 
@@ -57,11 +58,9 @@ class RecipeController extends Controller
     }
 
     public function show(Recipe $recipe)
-{
-    
-    return view('recipes.show', compact('recipe'));
-}
-
+    {
+        return view('recipes.show', compact('recipe'));
+    }
 
     public function like(Recipe $recipe)
     {
@@ -74,11 +73,11 @@ class RecipeController extends Controller
 
         $recipe->likes()->create(['user_id' => $user->id]);
         
-        // Verificar logros del creador de la receta
         $this->achievementService->checkUserAchievements($recipe->user);
 
         return back()->with('success', '¡Me gusta añadido!');
     }
+
     public function edit(Recipe $recipe)
     {
         if ($recipe->user_id !== Auth::id()) {
@@ -102,11 +101,9 @@ class RecipeController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Eliminar la imagen anterior
             $oldPath = str_replace('/storage/', 'public/', $recipe->image_url);
             Storage::delete($oldPath);
             
-            // Guardar nueva imagen
             $imagePath = $request->file('image')->store('recipes', 'public');
             $validated['image_url'] = Storage::url($imagePath);
         }
@@ -129,11 +126,11 @@ class RecipeController extends Controller
         return redirect()->route('home')
             ->with('success', '¡Receta eliminada exitosamente!');
     }
+
     public function search(Request $request)
     {
         $query = Recipe::with(['user', 'likes', 'comments']);
     
-        // Búsqueda existente...
         if ($request->has('search')) {
             $searchTerm = $request->search;
             $query->where(function($q) use ($searchTerm) {
@@ -143,32 +140,28 @@ class RecipeController extends Controller
             });
         }
     
-        // Filtro por tiempo de preparación
         if ($request->has('prep_time')) {
             switch ($request->prep_time) {
                 case 'quick':
-                    $query->where('prep_time', '<=', 30); // 30 minutos o menos
+                    $query->where('prep_time', '<=', 30);
                     break;
                 case 'medium':
-                    $query->whereBetween('prep_time', [31, 60]); // 31-60 minutos
+                    $query->whereBetween('prep_time', [31, 60]);
                     break;
                 case 'long':
-                    $query->where('prep_time', '>', 60); // más de 60 minutos
+                    $query->where('prep_time', '>', 60);
                     break;
             }
         }
     
-        // Filtro por tipo de cocina
         if ($request->has('cuisine_type')) {
             $query->where('cuisine_type', $request->cuisine_type);
         }
     
-        // Filtro por dificultad
         if ($request->has('difficulty')) {
             $query->where('difficulty', $request->difficulty);
         }
     
-        // Filtro por ingredientes específicos
         if ($request->has('ingredients')) {
             $ingredients = explode(',', $request->ingredients);
             foreach ($ingredients as $ingredient) {
@@ -176,12 +169,9 @@ class RecipeController extends Controller
             }
         }
     
-        // Filtros existentes de ordenamiento y fecha...
-    
         $recipes = $query->paginate(12)->withQueryString();
         $cuisineTypes = Recipe::distinct()->pluck('cuisine_type');
     
         return view('recipes.search', compact('recipes', 'cuisineTypes'));
     }
-
 }
