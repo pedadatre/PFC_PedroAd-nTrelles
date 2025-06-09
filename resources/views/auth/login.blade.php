@@ -1,9 +1,11 @@
 <x-guest-layout>
     <div class="flex items-center justify-center min-h-screen bg-gradient-to-br from-white to-gastro-50">
-        <div class="w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl px-8 md:px-10 py-10 bg-white/80 backdrop-blur-sm shadow-lg overflow-hidden sm:rounded-2xl animate-fade-in-up">
+        <div class="w-full max-w-4xl mx-auto px-8 md:px-10 py-10 bg-white/80 backdrop-blur-sm shadow-lg overflow-hidden sm:rounded-2xl animate-fade-in-up">
             <div class="mb-8 text-center">
                 <div class="flex justify-center mb-2">
-                    <x-application-logo class="h-14 w-14 animate-bounce-slow" />
+                    <a href="/" aria-label="Ir al inicio">
+                        <x-application-logo class="h-14 w-14 animate-bounce-slow" />
+                    </a>
                 </div>
                 <h2 class="text-3xl font-bold gradient-text mb-2">Bienvenido de nuevo</h2>
                 <p class="text-gray-600">Inicia sesión para continuar</p>

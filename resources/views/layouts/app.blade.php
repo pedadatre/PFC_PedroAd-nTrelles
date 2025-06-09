@@ -13,7 +13,7 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <script src="//unpkg.com/alpinejs" defer></script>
+        
         <style>
             body {
                 background: linear-gradient(to bottom right, #fff5f5, #fff);

@@ -54,17 +54,37 @@
         <div class="mb-14">
             <x-recipe-search :cuisineTypes="$cuisineTypes" />
         </div>
-        <!-- Últimas Recetas -->
+        <!-- Últimas Recetas o Resultados de Búsqueda -->
         <section class="mb-16">
             <div class="flex items-center justify-between mb-8">
-                <h2 class="text-3xl font-extrabold text-[#ac2358] tracking-tight">Últimas Recetas</h2>
+                <h2 class="text-3xl font-extrabold text-[#ac2358] tracking-tight">
+                    @if($recipes && $recipes->count())
+                        Resultados de la búsqueda
+                    @else
+                        Últimas Recetas
+                    @endif
+                </h2>
                 <span class="block w-24 h-1 bg-[#ffd6e0] rounded-full"></span>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                @foreach($latestRecipes as $recipe)
-                    <x-recipe-card :recipe="$recipe" />
-                @endforeach
+                @if($recipes && $recipes->count())
+                    @foreach($recipes as $recipe)
+                        <x-recipe-card :recipe="$recipe" />
+                    @endforeach
+                    <div class="col-span-3">
+                        {{ $recipes->links() }}
+                    </div>
+                @else
+                    @foreach($latestRecipes as $recipe)
+                        <x-recipe-card :recipe="$recipe" />
+                    @endforeach
+                @endif
             </div>
+            @if($recipes && $recipes->count() == 0 && request()->hasAny(['search','prep_time','cuisine_type','difficulty']))
+                <div class="text-center text-gray-500 py-12 col-span-3">
+                    No se encontraron recetas con esos filtros.
+                </div>
+            @endif
         </section>
     </div>
 </x-app-layout>

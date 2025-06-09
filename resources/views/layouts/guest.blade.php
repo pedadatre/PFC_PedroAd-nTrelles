@@ -13,17 +13,41 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <style>
+            .animate-fade-in-up {
+                animation: fadeInUp 0.8s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+            }
+            @keyframes fadeInUp {
+                0% {
+                    opacity: 0;
+                    transform: translateY(40px);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .animate-bounce-slow {
+                animation: bounce 2.5s infinite;
+            }
+            @keyframes bounce {
+                0%, 100% {
+                    transform: translateY(0);
+                }
+                50% {
+                    transform: translateY(-10px);
+                }
+            }
+        </style>
+        
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
-
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
+        <div class="flex items-center justify-center py-22 bg-gradient-to-br from-white to-gastro-50">
+            <div class="w-full max-w-4xl mx-auto">
+                <!-- Contenedor del contenido -->
+                <div>
+                    {{ $slot }}
+                </div>
             </div>
         </div>
     </body>
