@@ -12,9 +12,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description');
-            $table->string('icon_url');
+            $table->text('icon_url')->nullable();            
             $table->integer('coins_reward');
-            $table->string('type'); // recipes_created, likes_received, etc.
+            $table->string('type'); 
             $table->integer('requirement_count');
             $table->timestamps();
         });

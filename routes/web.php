@@ -14,9 +14,10 @@ use App\Http\Controllers\NotificationController;
 // Rutas públicas
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [RecipeController::class, 'search'])->name('recipes.search');
-Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
 
-// Rutas que requieren autenticación
+
+
+// Rutas protegidas
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -24,15 +25,13 @@ Route::middleware(['auth'])->group(function () {
     // Recetas
     Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
     Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
+    Route::get('/recipes/{recipe}/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
     Route::post('/recipes/{recipe}/like', [RecipeController::class, 'like'])->name('recipes.like');
     Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
     Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
     Route::post('/recipes/{recipe}/comments', [CommentController::class, 'store'])->name('comments.store');
-    Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
+    
 
-    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
-    Route::get('/messages/{user}', [MessageController::class, 'show'])->name('messages.show');
-    Route::post('/messages/{user}', [MessageController::class, 'store'])->name('messages.store');
     // Tienda
     Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
     Route::post('/shop/{item}/purchase', [ShopController::class, 'purchase'])->name('shop.purchase');
@@ -72,6 +71,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/user/items/{item}/equip', [UserItemController::class, 'equipItem'])->name('user.items.equip');
     Route::post('/user/items/{type}/unequip', [UserItemController::class, 'unequipItem'])->name('user.items.unequip');
 });
-
+// Rutas de recetas públicas
+Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
 // Rutas de autenticación
 require __DIR__.'/auth.php';

@@ -25,7 +25,7 @@
                                         {{ $notification->data['sender_name'] }}
                                     </a>
                                     te ha enviado un mensaje
-                                    <a href="{{ route('messages.show', $notification->data['sender_id']) }}" 
+                                    <a href="{{ route('chat.show', $notification->data['sender_id']) }}" 
                                        class="text-indigo-600 hover:text-indigo-800 ml-2">
                                         Ver conversación
                                     </a>

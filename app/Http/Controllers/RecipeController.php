@@ -30,7 +30,7 @@ class RecipeController extends Controller
             'ingredients' => 'required|array|min:1',
             'ingredients.*' => 'required|string|max:255',
             'instructions' => 'required|string',
-            'image' => 'required|image|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp,bmp,tiff|max:5120',
             'prep_time' => 'required|integer|min:1',
             'difficulty' => 'required|string|in:facil,medio,dificil',
             'cuisine_type' => 'required|string',
