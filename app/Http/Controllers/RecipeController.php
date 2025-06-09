@@ -59,6 +59,7 @@ class RecipeController extends Controller
 
     public function show(Recipe $recipe)
     {
+        $recipe->load(['likes', 'user', 'comments']);
         return view('recipes.show', compact('recipe'));
     }
 
