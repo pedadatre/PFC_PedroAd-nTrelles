@@ -16,17 +16,22 @@
         <script src="//unpkg.com/alpinejs" defer></script>
         <style>
             body {
-                background: #fff;
+                background: linear-gradient(to bottom right, #fff5f5, #fff);
+            }
+            .gradient-text {
+                background: linear-gradient(45deg, #8B0000, #FF69B4);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
             }
         </style>
     </head>
     <body class="font-sans antialiased relative">
-        <div class="min-h-screen">
+        <div class="min-h-screen bg-gradient-to-br from-white to-gastro-50">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white shadow">
+                <header class="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gastro-100">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
@@ -34,8 +39,10 @@
             @endisset
 
             <!-- Page Content -->
-            <main>
-                {{ $slot }}
+            <main class="py-6">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {{ $slot }}
+                </div>
             </main>
         </div>
     </body>

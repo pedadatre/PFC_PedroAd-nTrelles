@@ -1,27 +1,31 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<nav x-data="{ open: false }" class="bg-white/80 backdrop-blur-sm border-b border-gastro-100 sticky top-0 z-50">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('home') }}">
+                    <a href="{{ route('home') }}" class="flex items-center space-x-2">
                         <x-application-logo class="block h-12 w-auto" />
+                        <span class="text-xl font-semibold gradient-text">GastroWorld</span>
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('home')" :active="request()->routeIs('home')" class="text-gastro-600 hover:text-gastro-800">
+                    <x-nav-link :href="route('home')" :active="request()->routeIs('home')" 
+                        class="text-gastro-600 hover:text-gastro-800 transition-colors duration-200">
                         {{ __('Home') }}
                     </x-nav-link>
                     @auth
-                        <x-nav-link :href="route('shop.index')" :active="request()->routeIs('shop.*')" class="text-gastro-600 hover:text-gastro-800">
+                        <x-nav-link :href="route('shop.index')" :active="request()->routeIs('shop.*')" 
+                            class="text-gastro-600 hover:text-gastro-800 transition-colors duration-200">
                             {{ __('Tienda') }}
                         </x-nav-link>
                     @endauth
                     @auth
-                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-gastro-600 hover:text-gastro-800">
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" 
+                            class="text-gastro-600 hover:text-gastro-800 transition-colors duration-200">
                             {{ __('Dashboard') }}
                         </x-nav-link>
                     @endauth
@@ -30,8 +34,8 @@
 
             @auth
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
-                    <div class="flex items-center bg-gastro-100 px-3 py-1 rounded-full">
-                        <span class="text-gastro-600 mr-1">🪙</span>
+                    <div class="flex items-center bg-gastro-100/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm">
+                        <span class="text-gastro-600 mr-2">🪙</span>
                         <span class="font-medium text-gastro-800">{{ Auth::user()->coins_balance }}</span>
                     </div>
                 </div>
@@ -39,7 +43,7 @@
 
             <div class="relative mr-4">
                 @auth
-                    <a href="{{ route('notifications.index') }}" class="relative">
+                    <a href="{{ route('notifications.index') }}" class="relative p-2 rounded-full hover:bg-gastro-100/50 transition-colors duration-200">
                         <svg class="w-6 h-6 text-gastro-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
                         </svg>
@@ -57,7 +61,7 @@
                 @auth
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
-                            <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gastro-600 bg-white hover:text-gastro-800 focus:outline-none transition ease-in-out duration-150">
+                            <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-4 font-medium rounded-full text-gastro-600 bg-white hover:bg-gastro-50 focus:outline-none transition ease-in-out duration-150 shadow-sm">
                                 <div>{{ Auth::user()->name }}</div>
                                 <div class="ms-1">
                                     <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -68,7 +72,7 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link :href="route('profile.own')" class="text-gastro-600 hover:text-gastro-800">
+                            <x-dropdown-link :href="route('profile.own')" class="text-gastro-600 hover:text-gastro-800 hover:bg-gastro-50">
                                 {{ __('Profile') }}
                             </x-dropdown-link>
 
@@ -78,7 +82,7 @@
                                 <x-dropdown-link :href="route('logout')"
                                         onclick="event.preventDefault();
                                                     this.closest('form').submit();"
-                                        class="text-gastro-600 hover:text-gastro-800">
+                                        class="text-gastro-600 hover:text-gastro-800 hover:bg-gastro-50">
                                     {{ __('Log Out') }}
                                 </x-dropdown-link>
                             </form>
@@ -86,8 +90,8 @@
                     </x-dropdown>
                 @else
                     <div class="space-x-4">
-                        <a href="{{ route('login') }}" class="text-sm text-gastro-600 hover:text-gastro-800">Login</a>
-                        <a href="{{ route('register') }}" class="text-sm text-gastro-600 hover:text-gastro-800">Register</a>
+                        <a href="{{ route('login') }}" class="text-sm text-gastro-600 hover:text-gastro-800 transition-colors duration-200">Login</a>
+                        <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full text-white bg-gastro-600 hover:bg-gastro-700 focus:outline-none transition-colors duration-200">Register</a>
                     </div>
                 @endauth
             </div>
@@ -107,11 +111,11 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')" class="text-gastro-600 hover:text-gastro-800">
+            <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')" class="text-gastro-600 hover:text-gastro-800 hover:bg-gastro-50">
                 {{ __('Home') }}
             </x-responsive-nav-link>
             @auth
-                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-gastro-600 hover:text-gastro-800">
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-gastro-600 hover:text-gastro-800 hover:bg-gastro-50">
                     {{ __('Dashboard') }}
                 </x-responsive-nav-link>
             @endauth
@@ -119,14 +123,14 @@
 
         @auth
             <!-- Responsive Settings Options -->
-            <div class="pt-4 pb-1 border-t border-gray-200">
+            <div class="pt-4 pb-1 border-t border-gastro-100">
                 <div class="px-4">
                     <div class="font-medium text-base text-gastro-800">{{ Auth::user()->name }}</div>
                     <div class="font-medium text-sm text-gastro-600">{{ Auth::user()->email }}</div>
                 </div>
 
                 <div class="mt-3 space-y-1">
-                    <x-dropdown-link :href="route('profile.own')" class="text-gastro-600 hover:text-gastro-800">
+                    <x-dropdown-link :href="route('profile.own')" class="text-gastro-600 hover:text-gastro-800 hover:bg-gastro-50">
                         {{ __('Profile') }}
                     </x-dropdown-link>
 
@@ -136,7 +140,7 @@
                         <x-responsive-nav-link :href="route('logout')"
                                 onclick="event.preventDefault();
                                             this.closest('form').submit();"
-                                class="text-gastro-600 hover:text-gastro-800">
+                                class="text-gastro-600 hover:text-gastro-800 hover:bg-gastro-50">
                             {{ __('Log Out') }}
                         </x-responsive-nav-link>
                     </form>
@@ -144,10 +148,10 @@
             </div>
         @else
             <div class="pt-2 pb-3 space-y-1">
-                <x-responsive-nav-link :href="route('login')" class="text-gastro-600 hover:text-gastro-800">
+                <x-responsive-nav-link :href="route('login')" class="text-gastro-600 hover:text-gastro-800 hover:bg-gastro-50">
                     {{ __('Login') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('register')" class="text-gastro-600 hover:text-gastro-800">
+                <x-responsive-nav-link :href="route('register')" class="text-gastro-600 hover:text-gastro-800 hover:bg-gastro-50">
                     {{ __('Register') }}
                 </x-responsive-nav-link>
             </div>
