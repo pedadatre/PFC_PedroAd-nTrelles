@@ -13,6 +13,7 @@
         $table->string('email')->unique();
         $table->timestamp('email_verified_at')->nullable();
         $table->string('password');
+        $table->string('avatar_url')->nullable();
         $table->rememberToken();
         $table->timestamps();
     });
@@ -33,6 +34,12 @@
     
     public function down()
     {
+        
+    if (Schema::hasColumn('users', 'avatar_url')) {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('avatar_url');
+        });
+    }
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
