@@ -24,6 +24,11 @@ public function purchase(Item $item)
         return back()->with('error', 'No tienes suficientes monedas');
     }
 
+    // Evitar compra duplicada
+    if ($user->items()->where('item_id', $item->id)->exists()) {
+        return back()->with('error', 'Ya tienes este ítem en tu inventario');
+    }
+
     $user->items()->attach($item->id);
     $user->decrement('coins_balance', $item->price); 
 
