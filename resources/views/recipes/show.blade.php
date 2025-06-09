@@ -34,14 +34,14 @@
             </div>
                 @auth
                     <div class="flex items-center space-x-4">
-                        <form action="{{ route('recipes.like', $recipe) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" 
-                                    class="flex items-center space-x-1 text-gray-500 hover:text-gray-600 transition-colors">
-                                <span class="text-xl {{ $recipe->isLikedByUser(Auth::user()) ? 'text-red-500' : 'text-gray-500' }}">❤️</span>
-                                <span class="{{ $recipe->isLikedByUser(Auth::user()) ? 'text-red-500' : 'text-gray-500' }}">{{ $recipe->likes()->count() }}</span>
-                            </button>
-                        </form>
+                        @if (Auth::check())
+                            <form action="{{ route('recipes.like', $recipe) }}" method="POST" style="display: inline;">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-danger"> Me gusta ({{ $recipe->likes->count() }})</button>
+                            </form>
+                        @else
+                            <p>Inicia sesión para dar me gusta ({{ $recipe->likes->count() }})</p>
+                        @endif
                         @if(Auth::id() === $recipe->user_id)
                             <button onclick="openDeleteModal()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
                                 Eliminar

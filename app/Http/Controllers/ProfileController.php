@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -40,13 +41,25 @@ class ProfileController extends Controller
 
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $user->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($request->hasFile('avatar')) {
+            // Eliminar la foto anterior (si existe) para no acumular archivos
+            if ($user->avatar_url) {
+                $oldPath = str_replace('/storage/', 'public/', $user->avatar_url);
+                Storage::delete($oldPath);
+            }
+            // Guardar la nueva foto en public/avatars (o en la carpeta que prefieras)
+            $avatarPath = $request->file('avatar')->store('public/avatars');
+            $user->avatar_url = Storage::url($avatarPath);
         }
 
-        $request->user()->save();
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

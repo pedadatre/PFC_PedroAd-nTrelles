@@ -59,7 +59,12 @@ class RecipeController extends Controller
 
     public function show(Recipe $recipe)
     {
-        $recipe->load(['likes', 'user', 'comments']);
+        $recipe->load(['user', 'comments']);
+        if (Auth::check()) {
+            $recipe->load('likes');
+        } else {
+            $recipe->setRelation('likes', collect());
+        }
         return view('recipes.show', compact('recipe'));
     }
 

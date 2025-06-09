@@ -14,7 +14,7 @@ use App\Http\Controllers\NotificationController;
 // Rutas públicas
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [RecipeController::class, 'search'])->name('recipes.search');
-
+Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
 
 // Rutas que requieren autenticación
 Route::middleware(['auth'])->group(function () {
@@ -24,7 +24,6 @@ Route::middleware(['auth'])->group(function () {
     // Recetas
     Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
     Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
-    Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
     Route::post('/recipes/{recipe}/like', [RecipeController::class, 'like'])->name('recipes.like');
     Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
     Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
